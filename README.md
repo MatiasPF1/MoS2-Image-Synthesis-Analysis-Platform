@@ -60,14 +60,9 @@ The resulting images are **equivalent** to those obtained when:
 3. Running both files independently through ComputeM  or in batches 
 4. Getting the output STEM `.tif` with its correspondent Truth Labels `.tif`
 
-# Folder Workflow and Platform Facilitation (For 1 & 2, Currently Working in Integrating 3)
-- The platform safely interacts with the operating system to manage and organize output directories automatically, streamlining the large-scale, automated generation of STEM content.
-  <img width="1313" height="677" alt="image" src="https://github.com/user-attachments/assets/1216e092-5d7d-4d3c-b18d-b3e49f731cba" />
+# 3. Preprocessing
 
-
-# 3. Preprocessing(in progress)
-
-This stage applies **physics-informed data augmentation and preprocessing** to the generated STEM images and their corresponding defect label maps. The goal is to bridge the gap between ideal simulated images and experimentally acquired STEM data, while preserving pixel-wise alignment between images and labels.
+This stage applies **physics-informed preprocessing** to the generated STEM images and their corresponding defect label maps. The goal is to bridge the gap between ideal simulated images and experimentally acquired STEM data, while preserving pixel-wise alignment between images and labels.
 
 All transformations are applied **consistently across the image and all defect channels**.
 
@@ -106,6 +101,12 @@ All transformations are applied **consistently across the image and all defect c
 - `.npy` arrays for efficient loading into deep learning pipelines  
 
 The preprocessing step preserves **exact pixel-wise correspondence** between images and defect labels, making the output suitable for supervised learning tasks such as defect detection and segmentation in STEM images.
+
+# Folder Workflow and Platform Facilitation (For 1 , 2, 3)
+- The platform safely interacts with the operating system to manage and organize output directories automatically, streamlining the large-scale, automated generation of STEM content.
+  <img width="1313" height="677" alt="image" src="https://github.com/user-attachments/assets/1216e092-5d7d-4d3c-b18d-b3e49f731cba" />
+
+
 
 # 4. Deep Learning Models for Defect Detection(in progress, althought a model was created as an prototype)
 
