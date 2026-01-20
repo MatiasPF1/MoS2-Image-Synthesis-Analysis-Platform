@@ -495,13 +495,19 @@ def generate_files(sample_param_dic, EM_param_dic, file_num):
     # Organize ALL output files (main + labels)
     batch_executor.organize_output_files(folders)  
     
-    
-
+    # Pre-process training data (NEW: Step added after organizing)
+    print("\n" + "="*60)
+    print("Starting pre-processing for Training_Ready...")
+    print("="*60)
+    preprocessing_results = batch_executor.preprocess_training_data(folders)
+    print(f"\n{preprocessing_results['message']}")
+    print("="*60 + "\n")
     
     # Return the batch folder path and execution results
     return {
         'batch_folder': folders['batch'],
         'folders': folders,
         'execution_results': execution_results,
-        'label_results': label_results
+        'label_results': label_results,
+        'preprocessing_results': preprocessing_results
     }

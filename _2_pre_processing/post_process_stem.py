@@ -62,8 +62,8 @@ class post_process():
         
         # Adjust file_num to actual number of available images
         actual_num = len(image_list)
-        if actual_num < self.file_num:  # MODIFIED: Added this check to prevent IndexError
-            self.file_num = actual_num  # MODIFIED: Auto-adjust to available images
+        if actual_num < self.file_num:  # MODIFIED FROM ORIGINAL : Added this check to prevent IndexError
+            self.file_num = actual_num  # MODIFIED FROM ORIGINAL : Auto-adjust to available images
         
         img = plt.imread(self.image_path+image_list[0])
         #get image size
@@ -75,19 +75,19 @@ class post_process():
             image_stacks[i,:,:,0] = temp_image
             for j in range(len(self.defect_list)):
                 temp_defect_name = self.defect_list[j]+'_'+image_name[5:]
-                defect_path = self.image_path+temp_defect_name  # MODIFIED: Store path for existence check
-                if os.path.exists(defect_path):  # MODIFIED: Check if file exists before loading
+                defect_path = self.image_path+temp_defect_name            # MODIFIED FROM ORIGINAL : Store path for existence check
+                if os.path.exists(defect_path):                           # MODIFIED FROM ORIGINAL : Check if file exists before loading
                     temp_defect_image = plt.imread(defect_path)
                     image_stacks[i,:,:,j+1] = temp_defect_image
-                else:  # MODIFIED: Skip missing files instead of crashing
-                    print(f"Skipping missing label: {temp_defect_name}")  # MODIFIED: Print warning
+                else:                                                     # MODIFIED FROM ORIGINAL : Skip missing files instead of crashing
+                    print(f"Skipping missing label: {temp_defect_name}")  # MODIFIED FROM ORIGINAL : Print warning
         self.image_stacks = image_stacks.copy()
     
     def add_horizental_sheer(self, sheer_rate):
         
         """
         Add horizental sheer to simulate horizental sample draft during taking the image in STEM
-        sheer_rate = (sheer_mean,sheer_std) in guassian distribution
+        sheer_rate = (sheer_mean,sheer_std) in gaussian distribution
         single image has a linear sheer, while in different images, sheer rates are different
         """
         num_image, x, y, num_defects = np.shape(self.image_stacks)
@@ -213,10 +213,10 @@ class post_process():
 
         for i in range(num_images):
             temp_path = save_path+'image{}/'.format(i)
-            os.makedirs(temp_path, exist_ok=True)  # MODIFIED: Added exist_ok=True to avoid FileExistsError on re-run
+            os.makedirs(temp_path, exist_ok=True)  # MODIFIED From Original: Added exist_ok=True to avoid FileExistsError on re-run
             tifffile.imwrite(temp_path+'training_image{}'.format(i)+'.tiff',self.image_stacks[i,:,:,0].astype('uint8'))  # MODIFIED: Changed imsave to imwrite
             for j in range(len(self.defect_list)):
-                tifffile.imwrite(temp_path+'image{}_label'.format(i)+self.defect_list[j]+'.tiff',  # MODIFIED: Changed imsave to imwrite
+                tifffile.imwrite(temp_path+'image{}_label'.format(i)+self.defect_list[j]+'.tiff',  # MODIFIED From Original: Changed imsave to imwrite
                                 self.image_stacks[i,:,:,j+1].astype('uint8'))
     
     
@@ -234,7 +234,8 @@ class post_process():
             np.save(save_path+self.defect_list[i]+'_files.npy',self.image_stacks[:,:,:,i+1])
 
 
-# Example usage - uncomment to run
+'''
+From The Jupyter Notebook Test Code
 if __name__ == "__main__":
     # Define defect list
     defect_list = ['1Doped','2Doped','1vacancy','2vacancy','metal_vacancy','metal_Doped']
@@ -257,3 +258,4 @@ if __name__ == "__main__":
     Mypostprocess.save_as_npy_files('./saved_npy_files/')
     
     print("Processing complete!")
+'''

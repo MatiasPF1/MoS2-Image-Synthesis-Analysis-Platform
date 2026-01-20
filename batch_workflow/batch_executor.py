@@ -4,12 +4,17 @@ for
 -->
 1-Stem Images
 2-Label Maps 
-3-To Do: For pre_Proccesing 
+--> 
+3-pre_Processing 
 """
 import os
 import subprocess
 import shutil
 from pathlib import Path
+import numpy as np
+import tifffile
+# Use absolute import since main.py runs from project root
+from _2_pre_processing.post_process_stem import post_process
 
 
 
@@ -26,6 +31,10 @@ def create_batch_folders(base_path, batch_num):
         outputs/
             main/
             labels/
+        Training_Ready/
+            main/
+            labels/
+            labels_npy/
     """
     
     batch_folder = os.path.join(base_path, f"batch_{batch_num}") # This is the batch_X folder
@@ -40,7 +49,12 @@ def create_batch_folders(base_path, batch_num):
         
         'outputs': os.path.join(batch_folder, 'outputs'), # Outputs Folder Holding STEM and Labels TiFs
         'outputs_main': os.path.join(batch_folder, 'outputs', 'main'),
-        'outputs_labels': os.path.join(batch_folder, 'outputs', 'labels')
+        'outputs_labels': os.path.join(batch_folder, 'outputs', 'labels'),
+        
+        'training_ready': os.path.join(batch_folder, 'Training_Ready'), # Training Ready Folder for Pre-Processing
+        'training_ready_main': os.path.join(batch_folder, 'Training_Ready', 'main'),
+        'training_ready_labels': os.path.join(batch_folder, 'Training_Ready', 'labels'),
+        'training_ready_labels_npy': os.path.join(batch_folder, 'Training_Ready', 'labels_npy')
     }
     
                 #Create all folders with its path 
@@ -273,3 +287,258 @@ def organize_output_files(folders):
             shutil.move(src, dest)
         except Exception:
             pass
+
+
+
+################   6- Match Image-Label Pairs for Pre-Processing  ###########################
+
+def match_image_label_pairs(folders):
+    """
+    Pairs each main STEM image with its corresponding label maps
+    Returns:
+        List of dictionaries: [{'main': 'path/to/Image_001.tif', 
+                               'labels': {'metal_vacancy': 'path/...', ...}}, ...]
+    """
+    
+    outputs_main = folders['outputs_main']
+    outputs_labels = folders['outputs_labels']
+    
+    # 1- Get all main STEM images (files starting with 'Image' and ending with .tif)
+    main_images = []
+    try:
+        for f in os.listdir(outputs_main):
+            if f.startswith('Image') and f.endswith('.tif'): 
+                main_images.append(f)
+    except FileNotFoundError:
+        return []
+    
+    if not main_images:
+        return []
+    
+    # 2- Define defect types to match
+    defect_types = [
+        'metal_vacancy',
+        'chalcogen_vacancy', 
+        'metal_Doped',
+        'chalcogen_Doped',
+        '1Doped',
+        '2Doped',
+        '1vacancy',
+        '2vacancy'
+    ]
+    
+    # 3- Match each main image with its corresponding label maps
+    matched_pairs = []
+    
+    for main_image in main_images:
+        # Full path to main image
+        main_path = os.path.join(outputs_main, main_image)
+        
+        # Initialize labels dictionary for this main image
+        labels_dict = {}
+        
+        # Strip 'Image' prefix to match actual label naming convention
+        # Main: ImageMoS2_incostem_16_9_1_4.tif → MoS2_incostem_16_9_1_4.tif
+        base_filename = main_image.replace('Image', '', 1)  # Remove first 'Image' only
+        
+        # 4- Search for corresponding label maps
+        try:
+            label_files = os.listdir(outputs_labels)
+            
+            for defect_type in defect_types:
+                # Look for pattern: defect_type_MoS2_incostem_16_9_1_4.tif
+                expected_label = f"{defect_type}_{base_filename}"
+                
+                if expected_label in label_files:
+                    label_path = os.path.join(outputs_labels, expected_label)
+                    labels_dict[defect_type] = label_path
+                    
+        except FileNotFoundError:
+            pass
+        
+        # 5- Add to matched pairs (even if no labels found, to track all images)
+        matched_pairs.append({
+            'main': main_path,
+            'main_filename': main_image,
+            'labels': labels_dict
+        })
+    
+    return matched_pairs
+
+
+
+################   7- Process Individual Image-Label Pair Using post_process Class  ###########################
+
+def preprocess_pair(image_data, folders, preprocessing_config):
+    """
+    Processes one main image + its labels using the existing post_process class
+    
+    Args:
+        image_data: Dictionary from match_image_label_pairs {'main': 'path', 'main_filename': 'name', 'labels': {type: path}}
+        folders: Dictionary containing all batch folder paths
+        preprocessing_config: Dictionary with transformation parameters
+    """
+    try:
+        # 1- Setup: Create temporary directory structure that post_process expects
+        temp_dir = os.path.join(folders['batch'], '_temp_preprocess')
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        main_filename = image_data['main_filename']
+        labels_dict = image_data['labels']
+        
+        # 2- Copy files to temp directory with expected naming convention
+        shutil.copy2(image_data['main'], os.path.join(temp_dir, main_filename))
+        defect_list = []
+        for label_type, label_path in labels_dict.items():
+            # FIX: Strip 'Image' prefix to match read_image_and_label() expectations
+            # post_process strips first 5 chars from image filename when looking for labels
+            base_name = main_filename[5:] if main_filename.startswith('Image') else main_filename
+            expected_name = f"{label_type}_{base_name}"
+            shutil.copy2(label_path, os.path.join(temp_dir, expected_name))
+            defect_list.append(label_type)
+        
+        # 3- Create post_process instance
+        processor = post_process(
+            image_path=temp_dir + '/',  # post_process expects trailing slash
+            file_num=1,  # Process one image at a time
+            defect_list=defect_list
+        )
+        
+        # 4- Read images and labels
+        processor.read_image_and_label()
+        
+        # 5- Apply ALL transformations (as designed in original post_process class)
+        processor.add_horizental_sheer(preprocessing_config['sheer_rate'])
+        processor.add_vertical_constrain(preprocessing_config['constrain_rate'])
+        processor.rotate(preprocessing_config['rotation_degree'])
+        target_x, target_y = preprocessing_config['crop_size']
+        processor.crop(target_x, target_y)
+        processor.add_gaussian_noise(preprocessing_config['gaussian_noise'])
+        
+        # 6- Save processed files to Training_Ready folders
+        # Save main image
+        main_output = os.path.join(folders['training_ready_main'], main_filename)
+        tifffile.imwrite(
+            main_output,
+            processor.image_stacks[0, :, :, 0].astype('uint8')
+        )
+        
+        # Save labels (.tif and .npy)
+        labels_processed = []
+        for idx, label_type in enumerate(defect_list):
+            
+            # Save .tif version (exactly as original post_process class does)
+            label_filename = f"{label_type}_{main_filename}"
+            label_tif_path = os.path.join(folders['training_ready_labels'], label_filename)
+            tifffile.imwrite(
+                label_tif_path,
+                processor.image_stacks[0, :, :, idx + 1].astype('uint8')
+            )
+            
+            # Save .npy version
+            npy_filename = label_filename.replace('.tif', '.npy')
+            npy_path = os.path.join(folders['training_ready_labels_npy'], npy_filename)
+            np.save(
+                npy_path,
+                processor.image_stacks[0, :, :, idx + 1]
+            )
+            
+            labels_processed.append(label_type)
+        
+        # 7- Cleanup temp directory
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        
+        return {
+            'success': True,
+            'main_file': main_filename,
+            'labels_processed': labels_processed,
+            'error': None
+        }
+        
+    except Exception as e:
+        # Cleanup on error
+        try:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+        except:
+            pass
+        
+        return {
+            'success': False,
+            'main_file': image_data.get('main_filename', 'unknown'),
+            'labels_processed': [],
+            'error': str(e)
+        }
+
+
+
+################   8- Execute Batch Pre-Processing  ###########################
+
+def preprocess_training_data(folders, preprocessing_config=None):
+    """
+    Main entry point for pre-processing all images in a batch
+    """
+    
+    # Default configuration
+    if preprocessing_config is None:
+        preprocessing_config = {
+            'sheer_rate': (0.05, 0.025),
+            'constrain_rate': (0.05, 0.025),
+            'rotation_degree': 45,
+            'crop_size': (256, 256),
+            'gaussian_noise': (0, 20)
+        }
+    
+    # 1- Get all matched image-label pairs
+    matched_pairs = match_image_label_pairs(folders)
+    
+    if not matched_pairs:
+        return {
+            'success': False,
+            'message': 'No images found to process',
+            'total_pairs': 0,
+            'successful': 0,
+            'failed': 0,
+            'failed_files': [],
+            'output_paths': {
+                'main': folders['training_ready_main'],
+                'labels': folders['training_ready_labels'],
+                'labels_npy': folders['training_ready_labels_npy']
+            }
+        }
+    
+    # 2- Process each pair
+    results = []
+    successful = 0
+    failed = 0
+    failed_files = []
+    
+    for image_data in matched_pairs:
+        result = preprocess_pair(image_data, folders, preprocessing_config)
+        results.append(result)
+        
+        if result['success']:
+            successful += 1
+        else:
+            failed += 1
+            failed_files.append({
+                'file': result['main_file'],
+                'error': result['error']
+            })
+    
+    # 3- Return summary
+    total_pairs = len(matched_pairs)
+    
+    return {
+        'success': successful > 0,
+        'message': f"Pre-processed {successful}/{total_pairs} image pairs",
+        'total_pairs': total_pairs,
+        'successful': successful,
+        'failed': failed,
+        'failed_files': failed_files,
+        'output_paths': {
+            'main': folders['training_ready_main'],
+            'labels': folders['training_ready_labels'],
+            'labels_npy': folders['training_ready_labels_npy']
+        },
+        'results': results
+    }
