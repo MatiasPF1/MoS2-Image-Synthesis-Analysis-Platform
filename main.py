@@ -32,6 +32,7 @@ from UIComponents_MainUI.DisplayValues import register_display_values_callback
 ##########################################################################################################################
 from _1_xyz_params_generation import Generation
 from UIComponents_StemGeneration.FileInputPanel import file_input_panel
+from UIComponents_StemGeneration.ImageCallbacks import register_image_upload_callbacks
 
 
 
@@ -87,14 +88,6 @@ def stem_generation_page():
     )
 
 
-"""Content for Pre-Processing page"""
-def pre_processing_page():
-    return html.Div(
-        [],
-        className="main-content"
-    )
-
-
 """Content for ResUnet page"""
 def resunet_page():
     return html.Div(
@@ -129,17 +122,15 @@ app.layout = html.Div([
 @app.callback(
     Output("page-content", "children"),
     Output("nav-xyz-generation", "className"),
-    Output("nav-pre-processing", "className"),
     Output("nav-stem-generation", "className"),
     Output("nav-resunet", "className"),
     
     Input("nav-xyz-generation", "n_clicks"),
-    Input("nav-pre-processing", "n_clicks"),
     Input("nav-stem-generation", "n_clicks"),
     Input("nav-resunet", "n_clicks"),
     prevent_initial_call=True
 )
-def navigate_pages(xyz_clicks, pre_clicks, stem_clicks, resunet_clicks):
+def navigate_pages(xyz_clicks, stem_clicks, resunet_clicks):
     ctx = dash.callback_context.triggered_id
     # Base classes for sidebar items
     active_class = "sidebar-item active-sidebar-item"
@@ -147,27 +138,22 @@ def navigate_pages(xyz_clicks, pre_clicks, stem_clicks, resunet_clicks):
     if ctx == "nav-xyz-generation":
         return (
             xyz_generation_page(),
-            active_class, inactive_class, inactive_class, inactive_class
+            active_class, inactive_class, inactive_class
         )
     elif ctx == "nav-stem-generation":
         return (
             stem_generation_page(),
-            inactive_class, inactive_class, active_class, inactive_class
-        )
-    elif ctx == "nav-pre-processing":
-        return (
-            pre_processing_page(),
-            inactive_class, active_class, inactive_class, inactive_class
+            inactive_class, active_class, inactive_class
         )
     elif ctx == "nav-resunet":
         return (
             resunet_page(),
-            inactive_class, inactive_class, inactive_class, active_class
+            inactive_class, inactive_class, active_class
         )
     # Default - XYZ Generation
     return (
         xyz_generation_page(),
-        active_class, inactive_class, inactive_class, inactive_class
+        active_class, inactive_class, inactive_class
     )
 
 ##########################################################################################################################
@@ -482,6 +468,9 @@ def load_default_values(n_clicks):
 
 # Register display values callback
 register_display_values_callback(app)
+
+# Register image upload callbacks
+register_image_upload_callbacks(app)
 
 if __name__ == "__main__":
     app.run(debug=True)

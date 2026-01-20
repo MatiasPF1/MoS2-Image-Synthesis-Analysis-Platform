@@ -36,14 +36,6 @@ sidebar = html.Div(
                 ),
                 html.Div(
                     [
-                        html.I(className="fas fa-wrench sidebar-item-icon"),
-                        html.Span("Pre-Proccesing", className="sidebar-item-text")
-                    ],
-                    id="nav-pre-processing",
-                    className="sidebar-item"
-                ),
-                html.Div(
-                    [
                         html.I(className="fas fa-gear sidebar-item-icon"),
                         html.Span("ResUnet For Vacancies and Polymorphs", className="sidebar-item-text")
                     ],

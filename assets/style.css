@@ -342,7 +342,7 @@ label {
 }
 
 
-/*  DROPDOWNS - Batch size selector inside right-panel  */
+                    /*  DROPDOWNS - Batch size selector inside right-panel  */
 .batch-dropdown {
     border-radius: 8px !important;
     padding: 6px !important;
@@ -376,7 +376,7 @@ label {
 }
 
 
-/*  VALUES DISPLAY BOX - Shows entered values, top of right-panel-container  */
+            /*  VALUES DISPLAY BOX - Shows entered values, top of right-panel-container  */
 .values-panel {
     background: var(--bg-card);
     border-radius: var(--radius);
@@ -386,7 +386,7 @@ label {
     position: relative;
 }
 
-/*  Top accent line on values-panel  */
+            /*  Top accent line on values-panel  */
 .values-panel::before {
     content: "";
     position: absolute;
@@ -419,7 +419,7 @@ label {
     color: var(--text-secondary);
 }
 
-/*  Value numbers displayed on the right of each row  */
+                /*  Value numbers displayed on the right of each row  */
 .value-text {
     color: var(--accent);
     font-weight: 600;
@@ -427,7 +427,7 @@ label {
 }
 
 
-/*  FILE INPUT PANEL - Upload components for STEM Generation page  */
+                /*  FILE INPUT PANEL - Upload components for STEM Generation page  */
 .file-inputs-container {
     display: flex;
     flex-direction: column;
@@ -465,4 +465,109 @@ label {
     color: var(--accent);
     font-weight: 500;
     min-height: 20px;
+}
+
+
+    /*  IMAGE VISUALIZATION - Three column layout for TIF image display  */
+.image-viz-title {
+    color: var(--text-primary);
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.image-columns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.image-column {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.image-column-title {
+    text-align: center;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.image-upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    background: var(--bg-input);
+}
+
+.image-upload-area:hover {
+    border-color: var(--primary);
+}
+
+.image-upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+}
+
+.image-upload-icon {
+    font-size: 40px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.image-upload-text {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.image-display-area {
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    background: var(--bg-input);
+}
+
+.image-item-container {
+    margin-bottom: 12px;
+}
+
+.image-filename {
+    font-size: 11px;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-family: 'Consolas', monospace;
+}
+
+.image-preview {
+    width: 100%;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.image-empty-state {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 30px;
+    font-size: 13px;
+}
+
+.image-error-message {
+    font-size: 11px;
+    color: #ff6b6b;
+    padding: 10px;
+    background-color: rgba(255, 107, 107, 0.1);
+    border-radius: 6px;
+    margin-bottom: 10px;
 }

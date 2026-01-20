@@ -344,7 +344,6 @@ def match_image_label_pairs(folders):
         # 4- Search for corresponding label maps
         try:
             label_files = os.listdir(outputs_labels)
-            
             for defect_type in defect_types:
                 # Look for pattern: defect_type_MoS2_incostem_16_9_1_4.tif
                 expected_label = f"{defect_type}_{base_filename}"
@@ -390,9 +389,11 @@ def preprocess_pair(image_data, folders, preprocessing_config):
         shutil.copy2(image_data['main'], os.path.join(temp_dir, main_filename))
         defect_list = []
         for label_type, label_path in labels_dict.items():
-            # FIX: Strip 'Image' prefix to match read_image_and_label() expectations
-            # post_process strips first 5 chars from image filename when looking for labels
-            base_name = main_filename[5:] if main_filename.startswith('Image') else main_filename
+            # post_process strips first 5 chars from image filename when looking for labels(specifically 'Image')
+            if main_filename.startswith('Image'):
+                base_name = main_filename[5:]
+            else:
+                base_name = main_filename
             expected_name = f"{label_type}_{base_name}"
             shutil.copy2(label_path, os.path.join(temp_dir, expected_name))
             defect_list.append(label_type)

@@ -1,59 +1,64 @@
-from dash import html
+from dash import html, dcc
 
 
 ########################################################################################################################
-#                                    File Input Panel Component - Placeholder
+#                               File Input Panel Component - TIF Image Columns
 #########################################################################################################################
 
 
 def file_input_panel():
     """
-    Placeholder panel for STEM image visualization
-    Will be implemented in future versions
+    Panel with 3 clickable columns for uploading and visualizing TIF images
     """
     return html.Div(
         [
+            html.H3("STEM Image Visualization", className="image-viz-title"),
+            
+            # Three column layout
             html.Div(
                 [
-                    html.I(className="fas fa-microscope", style={
-                        "fontSize": "64px",
-                        "color": "#666",
-                        "marginBottom": "20px"
-                    }),
-                    html.H3("STEM Image Visualization", style={
-                        "color": "#333",
-                        "marginBottom": "15px"
-                    }),
-                    html.P(
-                        "You will be able to visualize STEM images here in future versions.",
-                        style={
-                            "color": "#666",
-                            "fontSize": "16px",
-                            "textAlign": "center",
-                            "maxWidth": "600px"
-                        }
-                    ),
-                    html.P(
-                        "The system will automatically generate and display STEM images after XYZ/Parameter file generation.",
-                        style={
-                            "color": "#999",
-                            "fontSize": "14px",
-                            "textAlign": "center",
-                            "maxWidth": "600px",
-                            "marginTop": "10px"
-                        }
-                    )
+                    # Column 1
+                    create_image_column("column-1", "Column 1"),
+                    
+                    # Column 2
+                    create_image_column("column-2", "Column 2"),
+                    
+                    # Column 3
+                    create_image_column("column-3", "Column 3"),
                 ],
-                style={
-                    "display": "flex",
-                    "flexDirection": "column",
-                    "alignItems": "center",
-                    "justifyContent": "center",
-                    "minHeight": "400px",
-                    "padding": "40px"
-                }
+                className="image-columns-grid"
             )
         ],
         id="file-input-panel",
         className="material-panel"
+    )
+
+
+def create_image_column(column_id, column_title):
+    """
+    Creates a single clickable column for TIF image upload and display
+    """
+    return html.Div(
+        [
+            html.H4(column_title, className="image-column-title"),
+            
+            # Upload area
+            dcc.Upload(
+                id=f"upload-{column_id}",
+                children=html.Div([
+                    html.I(className="fas fa-cloud-upload-alt image-upload-icon"),
+                    html.P("Click or drag TIF images here", className="image-upload-text")
+                ], className="image-upload-content"),
+                className="image-upload-area",
+                multiple=True,
+                accept=".tif,.tiff"
+            ),
+            
+            # Image display area
+            html.Div(
+                id=f"image-display-{column_id}",
+                className="image-display-area"
+            )
+        ],
+        className="image-column"
     )
