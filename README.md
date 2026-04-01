@@ -60,7 +60,7 @@ The resulting images are **equivalent** to those obtained when:
 3. Running both files independently through ComputeM  or in batches 
 4. Getting the output STEM `.tif` with its correspondent Truth Labels `.tif`
 
-# 3. Preprocessing
+# 3. Preprocessing(100% Functional in current version)
 
 This stage applies **physics-informed preprocessing** to the generated STEM images and their corresponding defect label maps. The goal is to bridge the gap between ideal simulated images and experimentally acquired STEM data, while preserving pixel-wise alignment between images and labels.
 
@@ -104,11 +104,12 @@ The preprocessing step preserves **exact pixel-wise correspondence** between ima
 
 # Folder Workflow and Platform Facilitation (For 1 , 2, 3)
 - The platform safely interacts with the operating system to manage and organize output directories automatically, streamlining the large-scale, automated generation of STEM content.
-  <img width="1313" height="677" alt="image" src="https://github.com/user-attachments/assets/1216e092-5d7d-4d3c-b18d-b3e49f731cba" />
+   <img width="1273" height="687" alt="image" src="https://github.com/user-attachments/assets/0f528780-8c54-42a5-bd2d-f9e8e200c369" />
 
 
 
-# 4. Deep Learning Models for Defect Detection(in progress, althought a model was created as an prototype)
+
+# 4. Deep Learning Models for Defect Detection(model was created as an prototype)
 
 This stage implements **two ResUNet-based convolutional neural networks** designed for pixel-wise analysis of STEM images of MoS₂.
 
