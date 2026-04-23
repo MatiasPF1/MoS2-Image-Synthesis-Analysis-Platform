@@ -2,6 +2,19 @@
 
 This tool facilitates STEM (Scanning Transmission Electron Microscopy) image simulation for Deep Learning and provides a general hub for working with atomic structures.
 
+## 🐳 Run with Docker
+
+```bash
+git clone https://github.com/MatiasPF1/MoS2-Image-Synthesis-Analysis-Platform.git
+cd MoS2-Image-Synthesis-Analysis-Platform
+docker build -t mos2-platform .
+docker run -p 8050:8050 mos2-platform
+```
+
+Then open `http://localhost:8050` in your browser. The only requirement is [Docker](https://www.docker.com/products/docker-desktop).
+
+---
+
 
 # 1. Generate Personalized XYZ and Params Files(100% Functional in current Version)
 
