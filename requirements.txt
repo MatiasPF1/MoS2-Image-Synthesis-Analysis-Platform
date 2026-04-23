@@ -6,6 +6,6 @@ dash-bootstrap-components==2.0.4
 numpy==1.26.4
 matplotlib==3.7.5
 scikit-image==0.21.0
-tifffile==2023.1.0
+tifffile==2023.1.23
 Pillow==10.0.0
 torch==2.8.0
