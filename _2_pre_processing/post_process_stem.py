@@ -75,7 +75,7 @@ class post_process():
             image_stacks[i,:,:,0] = temp_image
             for j in range(len(self.defect_list)):
                 temp_defect_name = self.defect_list[j]+'_'+image_name[5:]
-                defect_path = self.image_path+temp_defect_name            # MODIFIED FROM ORIGINAL : Store path for existence check
+                defect_path = self.image_path+temp_defect_name            # MODIFIED FROM ORIGINAL : Store path for existence chek
                 if os.path.exists(defect_path):                           # MODIFIED FROM ORIGINAL : Check if file exists before loading
                     temp_defect_image = plt.imread(defect_path)
                     image_stacks[i,:,:,j+1] = temp_defect_image
@@ -210,7 +210,6 @@ class post_process():
         if os.path.exists(save_path) == False:
             os.makedirs(save_path)
         num_images,x,y,num_defects = np.shape(self.image_stacks)
-
         for i in range(num_images):
             temp_path = save_path+'image{}/'.format(i)
             os.makedirs(temp_path, exist_ok=True)  # MODIFIED From Original: Added exist_ok=True to avoid FileExistsError on re-run

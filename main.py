@@ -36,7 +36,7 @@ from UIComponents_StemGeneration.ImageCallbacks import register_image_upload_cal
 
 
 
-''''                                                Main UI Work                                                            '''
+''''                                         Main UI Work                                                            '''
 
 
 ##########################################################################################################################

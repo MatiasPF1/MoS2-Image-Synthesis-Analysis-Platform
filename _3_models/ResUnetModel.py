@@ -33,7 +33,6 @@ import torch.nn as nn
 
 
 
-
 # --------------------------------------
 # Batch and Relu In a Single Module
 class BatchAndRelu(nn.Module):
@@ -81,10 +80,6 @@ class decoder_block(nn.Module):
         x=self.upsample(input)
         x=torch.cat((x, skip), dim=1) # Concatenating along channel dimension
         x=self.r(x)
-        
-
-
-
         
 
 
