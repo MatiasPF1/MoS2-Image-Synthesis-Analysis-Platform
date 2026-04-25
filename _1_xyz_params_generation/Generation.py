@@ -109,8 +109,8 @@ def generate_files(sample_param_dic, EM_param_dic, file_num):
     filesuffix = '_incostem_'
     
     # Create batch folder structure using batch workflow
-    downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
-    base_folder = os.path.join(downloads_folder, "STEM_MOS2")
+    # Use OUTPUT_DIR env var if set, otherwise fall back to /output (Docker volume mount point)
+    base_folder = os.environ.get("OUTPUT_DIR", "/output")
     if not os.path.exists(base_folder):
         os.makedirs(base_folder)
     

@@ -55,6 +55,17 @@ def generation_settings():
                         ],
                         id="generate-btn",
                         className="generate-btn"
+                    ),
+                    html.Div(
+                        [
+                            html.I(className="fas fa-folder-open", style={"marginRight": "6px", "color": "#adb5bd"}),
+                            html.Span("Outputs saved to: ", style={"color": "#adb5bd", "fontSize": "12px"}),
+                            html.Span("/output/batch_<n>/", style={"color": "#e9ecef", "fontSize": "12px", "fontFamily": "monospace"}),
+                            html.Br(),
+                            html.Span("Mount your folder → ", style={"color": "#adb5bd", "fontSize": "11px"}),
+                            html.Span("-v \"<your Downloads/STEM_MOS2>:/output\"", style={"color": "#6ea8fe", "fontSize": "11px", "fontFamily": "monospace"}),
+                        ],
+                        style={"marginTop": "14px", "padding": "10px", "backgroundColor": "#2b2b2b", "borderRadius": "6px", "lineHeight": "1.8"}
                     )
                 ],
                 className="right-panel generation-panel"

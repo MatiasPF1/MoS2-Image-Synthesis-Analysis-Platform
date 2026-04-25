@@ -21,8 +21,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 #6-copy files --> to container 
 COPY . .
 
-#7-Expose the port for the Dash app
+#7-Create the output directory (users mount their Downloads/STEM_MOS2 folder here)
+RUN mkdir -p /output
+VOLUME ["/output"]
+
+#8-Expose the port for the Dash app
 EXPOSE 8050
 
-#8-run the app
+#9-run the app
 CMD ["python", "main.py"]

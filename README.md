@@ -8,8 +8,21 @@ This tool facilitates STEM (Scanning Transmission Electron Microscopy) image sim
 git clone https://github.com/MatiasPF1/MoS2-Image-Synthesis-Analysis-Platform.git
 cd MoS2-Image-Synthesis-Analysis-Platform
 docker build -t mos2-platform .
-docker run -p 8050:8050 mos2-platform
 ```
+
+**Windows (PowerShell)**
+```powershell
+
+docker run -p 8050:8050 -v "C:\Users\<YourUsername>\Downloads\STEM_MOS2:/output" mos2-platform
+```
+
+**macOS / Linux**
+```bash
+
+docker run -p 8050:8050 -v ~/Downloads/STEM_MOS2:/output mos2-platform
+```
+
+All generated XYZ, params, and STEM files will appear in `Downloads/STEM_MOS2` on your machine.
 
 Then open `http://localhost:8050` in your browser. The only requirement is [Docker](https://www.docker.com/products/docker-desktop).
 
