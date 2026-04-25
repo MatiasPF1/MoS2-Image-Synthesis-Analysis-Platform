@@ -4,6 +4,8 @@ This tool facilitates STEM (Scanning Transmission Electron Microscopy) image sim
 
 ## 🐳 Run with Docker
 
+> ⚠️ **Work in Progress** — Docker support is currently being developed. The XYZ and parameter file generation works, but STEM image generation (outputs/ and Training_Ready/) is not yet fully functional inside Docker. Use the local Python setup in requirements for full functionality
+
 ```bash
 git clone https://github.com/MatiasPF1/MoS2-Image-Synthesis-Analysis-Platform.git
 cd MoS2-Image-Synthesis-Analysis-Platform

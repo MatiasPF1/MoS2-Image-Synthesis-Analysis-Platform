@@ -8,6 +8,7 @@ for
 3-pre_Processing 
 """
 import os
+import platform
 import subprocess
 import shutil
 from pathlib import Path
@@ -127,14 +128,20 @@ def execute_incostem_file(batch_folder, param_file_path):
         with open(param_file_path, 'rb') as f:
             params_content = f.read()
         
-        # Execute incostem (mimics: Get-Content file.param | .\incostem.exe), that was what worked in powershell when i tried to run incostem
+        # On Linux (Docker) incostem.exe is a Windows binary, so run it through Wine.
+        # On Windows run it directly.
+        if platform.system() == "Linux":
+            cmd = ["wine", incostem_path]
+        else:
+            cmd = [incostem_path]
+
         result = subprocess.run(
-            [incostem_path],
+            cmd,
             input=params_content,  # Pipe the content of the param file
-            capture_output=True, # Capture stdout and stderr
-            cwd=batch_folder,  # Run in batch folder
-            timeout=300,  # 5 minute timeout
-            shell=False   # No shell needed
+            capture_output=True,   # Capture stdout and stderr
+            cwd=batch_folder,      # Run in batch folder
+            timeout=300,           # 5 minute timeout
+            shell=False            # No shell needed
         )
         
     #3- Handle the result, returns a dictionary with success status and message

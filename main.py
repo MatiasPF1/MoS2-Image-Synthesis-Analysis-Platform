@@ -473,4 +473,14 @@ register_display_values_callback(app)
 register_image_upload_callbacks(app)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8050, debug=False)
+    import os
+
+    # Docker sets OUTPUT_DIR — bind to 0.0.0.0 so the -p port mapping works.
+    # Locally leave it as 127.0.0.1 so only one clean URL is shown.
+    if os.environ.get("OUTPUT_DIR"):
+        host = "0.0.0.0"
+    else:
+        host = "127.0.0.1"
+
+    print("\n  Open http://localhost:8050 in your browser\n")
+    app.run(host=host, port=8050, debug=False)

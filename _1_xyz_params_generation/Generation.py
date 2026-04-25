@@ -107,10 +107,11 @@ def run_generation(file_num):
 
 def generate_files(sample_param_dic, EM_param_dic, file_num):
     filesuffix = '_incostem_'
-    
     # Create batch folder structure using batch workflow
-    # Use OUTPUT_DIR env var if set, otherwise fall back to /output (Docker volume mount point)
-    base_folder = os.environ.get("OUTPUT_DIR", "/output")
+    
+    # Use OUTPUT_DIR env var if set (Docker sets it to /output), otherwise use ~/Downloads/STEM_MOS2
+    default_folder = os.path.join(os.path.expanduser("~"), "Downloads", "STEM_MOS2")
+    base_folder = os.environ.get("OUTPUT_DIR", default_folder)
     if not os.path.exists(base_folder):
         os.makedirs(base_folder)
     

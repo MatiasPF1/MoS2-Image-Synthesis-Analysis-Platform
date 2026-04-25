@@ -4,10 +4,17 @@ FROM python:3.11-slim
 # 2- Setting my working directory
 WORKDIR /app
 
-# 3-Pre Requirements --> running dependencies for scikit-image and tifffile
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# 3-Pre Requirements --> libgomp1 for scikit-image/tifffile, Wine to run incostem.exe (Windows binary)
+RUN dpkg --add-architecture i386 \
+    && apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
+    wine \
+    wine32 \
     && rm -rf /var/lib/apt/lists/*
+
+# Suppress Wine debug noise and pre-initialise the Wine prefix at build time
+ENV WINEDEBUG=-all
+RUN wine wineboot --init 2>/dev/null || true
 
 
 # 4-Requirements to install
@@ -21,9 +28,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 #6-copy files --> to container 
 COPY . .
 
-#7-Create the output directory (users mount their Downloads/STEM_MOS2 folder here)
-RUN mkdir -p /output
-VOLUME ["/output"]
+#7-Set output path for Docker 
+ENV OUTPUT_DIR=/output
 
 #8-Expose the port for the Dash app
 EXPOSE 8050

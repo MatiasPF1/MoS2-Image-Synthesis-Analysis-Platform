@@ -1,6 +1,12 @@
 from dash import html, dcc
+import os
+
+def _output_path():
+    """Returns the actual output path depending on environment."""
+    return os.environ.get("OUTPUT_DIR", os.path.join(os.path.expanduser("~"), "Downloads", "STEM_MOS2"))
 
 def generation_settings():
+    output_path = _output_path()
     return html.Div(
         [
             # Input Values Display Box - appears first
@@ -17,6 +23,44 @@ def generation_settings():
                         className="right-panel-title"
                     ),
                     html.P("Configure batch size and start generation", className="right-panel-subtitle"),
+
+                    # ── Instruction box ──────────────────────────────────────
+                    html.Div(
+                        [
+                            html.P(
+                                [
+                                    html.Span("1. ", style={"color": "#6ea8fe", "fontWeight": "bold"}),
+                                    "Your outputs will be saved to:",
+                                    html.Br(),
+                                    html.Span(
+                                        output_path + ("/batch_<n>/" if os.sep == "/" else "\\batch_<n>\\"),
+                                        style={"color": "#e9ecef", "fontFamily": "monospace", "fontSize": "11px", "wordBreak": "break-all"}
+                                    ),
+                                ],
+                                style={"margin": "0 0 8px 0", "fontSize": "12px", "color": "#adb5bd"}
+                            ),
+                            html.P(
+                                [
+                                    html.Span("2. ", style={"color": "#6ea8fe", "fontWeight": "bold"}),
+                                    html.Span(
+                                        "Training Ready files may take a few seconds to appear — the simulation runs in the background after the XYZ files are created.",
+                                        style={"color": "#adb5bd"}
+                                    ),
+                                ],
+                                style={"margin": "0", "fontSize": "12px"}
+                            ),
+                        ],
+                        style={
+                            "marginBottom": "14px",
+                            "padding": "10px 12px",
+                            "backgroundColor": "#1e2a38",
+                            "border": "1px solid #2d4a6b",
+                            "borderRadius": "6px",
+                            "lineHeight": "1.7"
+                        }
+                    ),
+                    # ─────────────────────────────────────────────────────────
+
                     html.Label("Batch Size", className="batch-label"),
                     dcc.Dropdown(
                         id="batch-size-dropdown",
@@ -56,17 +100,6 @@ def generation_settings():
                         id="generate-btn",
                         className="generate-btn"
                     ),
-                    html.Div(
-                        [
-                            html.I(className="fas fa-folder-open", style={"marginRight": "6px", "color": "#adb5bd"}),
-                            html.Span("Outputs saved to: ", style={"color": "#adb5bd", "fontSize": "12px"}),
-                            html.Span("/output/batch_<n>/", style={"color": "#e9ecef", "fontSize": "12px", "fontFamily": "monospace"}),
-                            html.Br(),
-                            html.Span("Mount your folder → ", style={"color": "#adb5bd", "fontSize": "11px"}),
-                            html.Span("-v \"<your Downloads/STEM_MOS2>:/output\"", style={"color": "#6ea8fe", "fontSize": "11px", "fontFamily": "monospace"}),
-                        ],
-                        style={"marginTop": "14px", "padding": "10px", "backgroundColor": "#2b2b2b", "borderRadius": "6px", "lineHeight": "1.8"}
-                    )
                 ],
                 className="right-panel generation-panel"
             )
